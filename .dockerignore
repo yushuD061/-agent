@@ -1,0 +1,31 @@
+.git
+.agents
+.codex
+.venv
+.uv-cache
+.pytest_cache
+.tmp
+__pycache__
+**/__pycache__
+*.py[cod]
+*.log
+
+# Secrets and machine-local runtime state must never enter the image.
+.env
+.env.*
+!.env.example
+deploy/docker/.env
+data
+workspace
+
+# Development-only inputs and generated artifacts.
+test
+test2
+doc
+build
+dist
+
+# Ship only the three approved offline OCR models.
+.paddlex/*
+!.paddlex/official_models
+!.paddlex/official_models/**

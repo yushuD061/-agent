@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="NanoClaw intelligent foreign trade workspace">
+  <title>NanoClaw</title>
+  <link rel="stylesheet" href="/static/app.css?v=20260725-pdf-review-1">
+  <link rel="stylesheet" href="/static/trade-workbench.css?v=20260728-2">
+  <link rel="stylesheet" href="/static/css/markdown.css">
+  <link rel="stylesheet" href="/static/import.css">
+</head>
+<body class="rail-collapsed">
+  <div class="app-shell">
+    <aside class="rail" aria-label="Primary navigation">
+      <div class="brand" aria-label="NanoClaw"><span class="brand-mark">N</span></div>
+      <nav class="rail-nav">
+        <button class="rail-button active" data-view="chat" data-i18n-title="nav.chat" aria-label="Chat">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h9a4 4 0 0 1 4 4z"/></svg>
+          <span class="rail-label" data-i18n="nav.chat">对话</span>
+        </button>
+        <button class="rail-button" data-view="rates" data-i18n-title="nav.rates" aria-label="Exchange rates">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 7 3-3 3 3M10 4v11M17 17l-3 3-3-3m3 3V9"/></svg>
+          <span class="rail-label" data-i18n="nav.rates">汇率</span>
+        </button>
+        <button class="rail-button" data-view="knowledge" data-i18n-title="nav.knowledge" aria-label="Knowledge base">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H11v16H6.5A2.5 2.5 0 0 0 4 21.5zM20 5.5A2.5 2.5 0 0 0 17.5 3H13v16h4.5a2.5 2.5 0 0 1 2.5 2.5z"/></svg>
+          <span class="rail-label" data-i18n="nav.knowledge">知识库</span>
+        </button>
+        <button class="rail-button" data-view="email" data-i18n-title="nav.email" aria-label="Email">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18v12H3z"/><path d="m3 7 9 7 9-7"/></svg>
+          <span class="rail-label" data-i18n="nav.email">邮箱</span>
+        </button>
+        <button class="rail-button" data-view="trade" aria-label="外贸作业台" title="外贸作业台">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19h16M6 17V8l6-4 6 4v9M9 17v-5h6v5"/><circle cx="12" cy="9" r="1"/></svg>
+          <span class="rail-label">外贸作业台</span>
+        </button>
+        <a id="customerPortalLink" class="rail-button rail-link" href="http://127.0.0.1:8766/" target="_blank" rel="noopener" data-i18n-title="nav.customer" aria-label="Customer portal"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h9a4 4 0 0 1 4 4z"/><path d="M8 9h8M8 13h5"/></svg><span class="rail-label" data-i18n="nav.customer">客户门户</span></a>
+      </nav>
+      <div class="rail-bottom">
+        <button id="railToggle" class="rail-button" data-i18n-title="nav.expand" aria-label="Expand navigation"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg><span class="rail-label" data-i18n="nav.expand">展开菜单</span></button>
+        <button id="themeToggle" class="rail-button" data-i18n-title="theme.toggle" aria-label="Toggle theme">
+          <svg class="sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>
+          <svg class="moon" viewBox="0 0 24 24"><path d="M20 15.2A8.5 8.5 0 0 1 8.8 4 8.5 8.5 0 1 0 20 15.2z"/></svg>
+        </button>
+        <div class="language-wrap">
+          <button id="languageToggle" class="rail-button language-button" aria-haspopup="listbox" aria-expanded="false"><span id="languageCode">中</span></button>
+          <div id="languageMenu" class="language-menu" role="listbox">
+            <button data-language="zh" role="option">中文 <span>ZH</span></button>
+            <button data-language="en" role="option">English <span>EN</span></button>
+            <button data-language="de" role="option">Deutsch <span>DE</span></button>
+          </div>
+        </div>
+        <div class="rail-profile" data-i18n-title="profile.name" aria-label="Local workspace">
+          <span class="avatar">NC</span>
+          <span class="rail-profile-copy"><strong data-i18n="profile.name">本地工作空间</strong><small data-i18n="profile.private">私密会话</small></span>
+          <span id="connectionBadge" class="status-dot connecting" data-i18n-title="status.connecting"></span>
+        </div>
+      </div>
+    </aside>
+
+    <section class="conversation-panel" id="conversationPanel">
+      <header class="panel-header">
+        <div><p class="eyebrow" data-i18n="workspace.label">WORKSPACE</p><h1 data-i18n="app.name">NanoClaw</h1></div>
+        <span class="workspace-actions"><button id="workspaceToggle" class="icon-button" data-i18n-title="workspace.collapse" aria-label="Collapse workspace"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button><button id="newChat" class="icon-button" data-i18n-title="chat.new" aria-label="New chat">
+          <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        </button></span>
+      </header>
+      <div class="search-box">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+        <input id="conversationSearch" data-i18n-placeholder="chat.search" placeholder="Search conversations">
+      </div>
+      <div class="section-label"><span data-i18n="chat.recent">RECENT</span><span id="chatCount">1</span></div>
+      <div id="conversationList" class="conversation-list" aria-live="polite"></div>
+    </section>
+
+    <main class="main-stage">
+      <aside id="workflowPanel" class="workflow-panel" aria-live="polite" hidden>
+        <header id="workflowDragHandle" class="workflow-drag-handle" tabindex="0" role="toolbar" aria-label="Workflow window"><strong data-i18n="workflow.title">业务流程</strong><span class="workflow-actions"><button id="workflowReset" type="button" data-i18n-title="workflow.reset" aria-label="Restore default position">⌖</button><button id="workflowDock" type="button" data-i18n-title="workflow.dock" aria-label="Dock">▣</button><button id="workflowMinimize" type="button" data-i18n-title="workflow.minimize" aria-label="Minimize">—</button></span></header>
+        <select id="workflowRunSelect" aria-label="Workflow run"></select>
+        <div class="workflow-summary"><span id="workflowType">—</span><strong id="workflowNode">—</strong><small id="workflowStatus">—</small></div>
+        <div class="workflow-progress"><i id="workflowProgressBar"></i></div>
+        <ol id="workflowNodes" class="workflow-nodes"></ol>
+        <p id="workflowNotice" class="workflow-notice"></p>
+      </aside>
+      <section id="chatView" class="view active" aria-labelledby="chatTitle">
+        <header class="stage-header">
+          <button id="mobileMenu" class="icon-button mobile-only" aria-label="Menu"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+          <div class="title-block"><h2 id="chatTitle" data-i18n="chat.defaultTitle">New conversation</h2><p><span id="connectionText" data-i18n="status.connecting">Connecting…</span><span class="separator">·</span><span data-i18n="chat.model">NanoClaw Agent</span></p></div>
+          <div class="header-actions"><button class="icon-button" data-i18n-title="chat.more"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></button></div>
+        </header>
+        <div id="messages" class="messages" aria-live="polite">
+          <div id="welcome" class="welcome">
+            <div class="hero-mark">N</div>
+            <h3 data-i18n="welcome.title">How can I help today?</h3>
+            <p data-i18n="welcome.subtitle">Ask about products, quotations, inventory, trade knowledge, or any task in your workspace.</p>
+            <div class="suggestions">
+              <button data-prompt-key="prompt.products"><span>01</span><strong data-i18n="prompt.products">Find matching products</strong><small data-i18n="prompt.productsHint">Search by SKU, name, or category</small></button>
+              <button data-prompt-key="prompt.quote"><span>02</span><strong data-i18n="prompt.quote">Prepare a quotation</strong><small data-i18n="prompt.quoteHint">Build a safe draft for review</small></button>
+              <button data-prompt-key="prompt.knowledge"><span>03</span><strong data-i18n="prompt.knowledge">Search trade knowledge</strong><small data-i18n="prompt.knowledgeHint">Get an answer with references</small></button>
+            </div>
+          </div>
+        </div>
+        <div class="composer-area">
+          <form id="composer" class="composer">
+            <div id="conversationFiles" class="conversation-files" aria-live="polite"></div>
+            <textarea id="messageInput" rows="1" data-i18n-placeholder="chat.placeholder" placeholder="Message NanoClaw…"></textarea>
+            <div class="composer-toolbar">
+              <div class="composer-left">
+                <div class="import-wrap">
+                  <button id="importToggle" type="button" class="import-button" aria-haspopup="menu" aria-expanded="false" data-i18n-title="file.import">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                    <span data-i18n="file.import">导入</span>
+                  </button>
+                  <div id="importMenu" class="import-menu" role="menu">
+                    <button id="readFileAction" type="button" role="menuitem">
+                      <span class="import-menu-icon"><svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7zM14 3v5h5M10 13h5M10 17h5"/></svg></span>
+                      <span><strong data-i18n="file.readTitle">读取文件</strong><small data-i18n="file.readHint">仅用于当前对话</small></span>
+                    </button>
+                    <button id="knowledgeFileAction" type="button" role="menuitem">
+                      <span class="import-menu-icon knowledge"><svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H11v16H6.5A2.5 2.5 0 0 0 4 21.5zM20 5.5A2.5 2.5 0 0 0 17.5 3H13v16h4.5a2.5 2.5 0 0 1 2.5 2.5z"/></svg></span>
+                      <span><strong data-i18n="file.knowledgeTitle">导入知识库</strong><small data-i18n="file.knowledgeHint">持久保存并用于检索</small></span>
+                    </button>
+                  </div>
+                  <input id="conversationFileInput" type="file" hidden accept=".txt,.md,.markdown,.html,.htm,.json,.csv,text/plain,text/markdown,text/html,application/json,text/csv">
+                  <input id="knowledgeFileInput" type="file" hidden accept=".txt,.md,.markdown,.html,.htm,.json,.csv,.pdf,.png,.jpg,.jpeg,.webp,text/plain,text/markdown,text/html,application/json,text/csv,application/pdf,image/png,image/jpeg,image/webp">
+                </div>
+                <span class="shortcut" data-i18n="chat.shortcut">Enter to send · Shift + Enter for new line</span>
+              </div>
+              <button id="sendButton" type="submit" class="send-button" disabled data-i18n-title="chat.send">
+                <svg viewBox="0 0 24 24"><path d="m5 12 14-7-4 14-3-6z"/></svg>
+              </button>
+            </div>
+          </form>
+          <p class="disclaimer" data-i18n="chat.disclaimer">NanoClaw can make mistakes. Verify important business information.</p>
+        </div>
+      </section>
+
+      <section id="ratesView" class="view rates-view" aria-labelledby="ratesTitle">
+        <header class="stage-header">
+          <button class="icon-button mobile-only mobile-menu-clone" aria-label="Menu"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+          <div class="title-block"><h2 id="ratesTitle" data-i18n="rates.title">Exchange rates</h2><p data-i18n="rates.subtitle">Live reference rates for trade decisions</p></div>
+          <button id="refreshRates" class="secondary-button"><svg viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M6.1 9A7 7 0 0 1 18 6l2 2M17.9 15A7 7 0 0 1 6 18l-2-2"/></svg><span data-i18n="rates.refresh">Refresh</span></button>
+        </header>
+        <div class="rates-content">
+          <div class="rates-hero"><span class="rates-kicker" data-i18n="rates.kicker">CURRENCY CONVERTER</span><h3 data-i18n="rates.heading">Convert with clarity.</h3><p data-i18n="rates.description">Indicative market rates powered by ExchangeRate-API. Confirm contractual rates before approval.</p></div>
+          <div class="converter-card">
+            <div class="field"><label for="amount" data-i18n="rates.amount">Amount</label><input id="amount" type="number" min="0" step="any" value="1000"></div>
+            <div class="currency-row">
+              <div class="field"><label for="fromCurrency" data-i18n="rates.from">From</label><select id="fromCurrency"></select></div>
+              <button id="swapCurrencies" class="swap-button" data-i18n-title="rates.swap"><svg viewBox="0 0 24 24"><path d="m7 7 3-3 3 3M10 4v16m7-3-3 3-3-3"/></svg></button>
+              <div class="field"><label for="toCurrency" data-i18n="rates.to">To</label><select id="toCurrency"></select></div>
+            </div>
+            <div class="conversion-result"><span id="resultLabel">1,000 USD =</span><strong id="conversionResult">—</strong><small id="rateDetail" data-i18n="rates.loading">Loading current rates…</small></div>
+            <div class="rate-meta"><span><i id="rateStatus" class="status-dot connecting"></i><span id="rateTimestamp" data-i18n="rates.waiting">Waiting for data</span></span><span data-i18n="rates.source">Source: open.er-api.com</span></div>
+          </div>
+          <div class="popular-section"><div class="section-heading"><div><span data-i18n="rates.market">MARKET SNAPSHOT</span><h4 data-i18n="rates.popular">Popular against USD</h4></div></div><div id="rateGrid" class="rate-grid"></div></div>
+        </div>
+      </section>
+      <section id="knowledgeView" class="view knowledge-view" aria-labelledby="knowledgeTitle">
+        <header class="stage-header"><button class="icon-button mobile-only mobile-menu-clone" aria-label="Menu"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><div class="title-block"><h2 id="knowledgeTitle" data-i18n="knowledge.title">知识库</h2><p data-i18n="knowledge.subtitle">文档、切块和索引状态</p></div><button id="knowledgeImport" class="secondary-button" data-i18n="file.import">导入</button></header>
+        <div class="knowledge-content"><div id="knowledgeStats" class="knowledge-stats"></div><div class="knowledge-toolbar"><input id="knowledgeSearch" data-i18n-placeholder="knowledge.search" placeholder="搜索文件名"></div><div id="knowledgeList" class="knowledge-list" aria-live="polite"></div></div>
+        <aside id="knowledgeDetail" class="knowledge-detail" hidden><header><strong data-i18n="knowledge.details">文档详情</strong><button id="knowledgeDetailClose" type="button" aria-label="Close">×</button></header><div id="knowledgeDetailStages" class="knowledge-stage-strip"></div><div id="knowledgeOcrNotice" class="knowledge-ocr-notice" hidden></div><div id="knowledgeWarnings" class="knowledge-warnings" hidden></div><button id="knowledgeApproveReview" type="button" class="secondary-button knowledge-review-approve" data-i18n="knowledge.approveReview" hidden>确认复核并继续索引</button><div class="knowledge-classification"><label for="knowledgeClassification" data-i18n="knowledge.classification">分类</label><select id="knowledgeClassification"><option value="internal" data-i18n="knowledge.internal">内部</option><option value="public" data-i18n="knowledge.public">公开</option></select></div><dl id="knowledgeDetailFields"></dl><section id="knowledgeImageSection" class="knowledge-preview" hidden><header><strong>图片 OCR 索引</strong><small id="knowledgeImageCount"></small></header><div id="knowledgeImageList"></div></section><section id="knowledgePreviewSection" class="knowledge-preview" hidden><header><strong data-i18n="knowledge.preview">页码与切块预览</strong><small id="knowledgePreviewCount"></small></header><div id="knowledgePreviewList"></div></section></aside>
+      </section>
+      <section id="tradeView" class="view trade-view" aria-labelledby="tradeTitle">
+        <header class="stage-header"><button class="icon-button mobile-only mobile-menu-clone" aria-label="Menu"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><div class="title-block"><h2 id="tradeTitle" data-task-i18n="title">外贸任务工作台</h2><p data-task-i18n="subtitle">对话驱动 · 人工介入 · 从有效断点继续</p></div><button id="taskRefresh" class="secondary-button" data-task-i18n="refresh">刷新</button></header>
+        <div class="task-workbench">
+          <section class="task-overview" aria-live="polite"><div><span>HUMAN-IN-THE-LOOP</span><h3 data-task-i18n="overview">统一任务运行时</h3><p data-task-i18n="overviewHint">任务状态来自服务端检查点和事件，不由页面模拟。</p></div><div class="task-overview-stats"><strong id="taskRunningCount">0</strong><small data-task-i18n="activeTasks">活动任务</small><strong id="taskHumanCount">0</strong><small data-task-i18n="humanItems">待人工处理</small></div></section>
+          <div class="task-layout">
+            <aside class="task-list-panel"><header><div><span data-task-i18n="tasks">任务</span><small id="taskConversationScope">全部对话</small></div><button id="taskCreateFromConversation" type="button" data-task-i18n="newTask">从当前对话新建</button></header><div id="taskList" class="task-list"></div><details class="task-legacy"><summary data-task-i18n="legacy">旧版活动（只读）</summary><div id="taskLegacyList">—</div></details></aside>
+            <section class="task-detail-panel">
+              <div id="taskEmpty" class="task-empty"><span>N</span><h3 data-task-i18n="emptyTitle">从对话发起一项外贸任务</h3><p data-task-i18n="emptyHint">任务出现后，可在这里暂停、纠正方向、查看断点并恢复执行。</p></div>
+              <div id="taskDetail" hidden>
+                <header class="task-detail-header"><div><span id="taskStatus" class="task-status"></span><h3 id="taskTitle"></h3><p><span id="taskId"></span><span>·</span><span id="taskPlanVersion"></span><span>·</span><span id="taskUpdatedAt"></span></p></div><div class="task-command-bar"><button id="taskPause" class="secondary-button" data-task-i18n="pause">暂停</button><button id="taskResume" class="secondary-button" data-task-i18n="resume">恢复</button><button id="taskRetry" class="secondary-button" data-task-i18n="retry">重试</button><button id="taskCancel" class="danger-button" data-task-i18n="cancel">取消</button></div></header>
+                <section id="taskPlanDiff" class="task-plan-diff" hidden></section>
+                <div class="task-progress-grid"><article><small data-task-i18n="currentStep">当前步骤</small><strong id="taskCurrentStep">—</strong><p id="taskCurrentHint">—</p></article><article><small data-task-i18n="completed">已完成</small><strong id="taskCompletedCount">0</strong><p id="taskCheckpointCount">0 checkpoints</p></article><article><small data-task-i18n="nextSteps">待执行</small><strong id="taskPendingCount">0</strong><p id="taskNextStep">—</p></article></div>
+                <ol id="taskTimeline" class="task-timeline"></ol>
+                <div class="task-lower-grid"><section><header><h4 data-task-i18n="humanQueue">待人工处理</h4></header><div id="taskHumanActions" class="task-human-actions"></div></section><section><header><h4 data-task-i18n="artifacts">中间产物与检查点</h4></header><div id="taskArtifacts" class="task-artifacts"></div></section></div>
+                <form id="taskInstructionForm" class="task-instruction"><label for="taskInstruction" data-task-i18n="instructionLabel">补充要求或纠正执行方向</label><textarea id="taskInstruction" required maxlength="10000" rows="3" data-task-i18n-placeholder="instructionPlaceholder" placeholder="例如：数量改为 500 件，目的地改为 Hamburg；保留已完成的产品匹配。"></textarea><button type="submit" data-task-i18n="applyInstruction">暂停、重规划并继续</button></form>
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
+      <section id="emailView" class="view email-view" aria-labelledby="emailTitle">
+        <header class="stage-header">
+          <button class="icon-button mobile-only mobile-menu-clone" aria-label="Menu"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+          <div class="title-block"><h2 id="emailTitle" data-i18n="email.title">邮箱</h2><p data-i18n="email.subtitle">QQ 与网易邮箱账户、审核和受控投递</p></div>
+          <span id="emailApiStatus" class="email-api-status ready">本机工作空间</span>
+        </header>
+        <div class="email-content">
+          <div class="email-boundary" role="status"><strong data-i18n="email.m2Title">邮箱工作区</strong><span id="emailBoundaryText">Agent 自动审核 RFQ 字段；本机工作空间可直接查看邮件记录和受控投递状态。</span></div>
+          <div class="email-overview">
+            <section class="email-overview-card"><h3 data-i18n="ops.metrics">今日运行指标</h3><div class="email-overview-metrics"><p><span data-i18n="ops.pendingReviews">待审核邮件</span><b id="emailMetricPending">—</b></p><p><span data-i18n="ops.sendableApprovals">可发送审批</span><b id="emailMetricSendable">—</b></p><p><span data-i18n="ops.activeDeliveries">投递处理中</span><b id="emailMetricActive">—</b></p><p><span data-i18n="ops.acceptedToday">今日 SMTP 接受</span><b id="emailMetricAccepted">—</b></p></div></section>
+            <section class="email-overview-card"><h3 data-i18n="ops.mailbox">邮箱工作台</h3><p id="emailRuntimeStatus" class="email-overview-status" data-i18n="ops.disabled">M3 收件审核已启用</p><div id="emailRuntimeHint" class="email-overview-hint">正在读取收件与投递运行状态。</div></section>
+          </div>
+          <div class="email-tabs" role="tablist" aria-label="Email workspace">
+            <button type="button" class="active" data-email-tab="accounts" role="tab" aria-selected="true" data-i18n="email.tabAccounts">账户配置</button>
+            <button type="button" data-email-tab="inbound" role="tab" aria-selected="false">邮件记录</button>
+            <button type="button" data-email-tab="sendable" role="tab" aria-selected="false" data-i18n="email.tabSendable">待发送</button>
+            <button type="button" data-email-tab="deliveries" role="tab" aria-selected="false" data-i18n="email.tabDeliveries">投递记录</button>
+          </div>
+          <section id="emailAccountsPanel" class="email-tab-panel active" data-email-panel="accounts" role="tabpanel">
+            <aside class="email-account-sidebar">
+              <header><div><span data-i18n="email.accounts">邮箱账户</span><small id="emailAccountCount">0</small></div><button id="emailNewAccount" type="button" data-i18n="email.addAccount">新增</button></header>
+              <div id="emailAccountList" class="email-account-list" aria-live="polite"><div class="email-empty" data-i18n="email.unlockHint">输入管理令牌后读取账户。</div></div>
+            </aside>
+            <form id="emailAccountForm" class="email-account-form" autocomplete="off">
+              <input id="emailAccountId" type="hidden">
+              <input id="emailConfigVersion" type="hidden" value="0">
+              <div class="email-form-heading"><div><span data-i18n="email.configuration">账户配置</span><small data-i18n="email.secretHint">授权码只随本次请求发送，页面不会保存或回显。</small></div><span id="emailFormStatus" class="email-form-status" data-i18n="email.draft">未保存</span></div>
+              <div class="email-form-grid">
+                <label><span data-i18n="email.provider">邮箱类型</span><select id="emailProvider" required></select></label>
+                <label><span data-i18n="email.displayName">显示名称</span><input id="emailDisplayName" required maxlength="50" data-i18n-placeholder="email.displayNamePlaceholder" placeholder="外贸销售邮箱"></label>
+                <label class="email-span-2"><span data-i18n="email.address">邮箱地址</span><input id="emailAddress" type="email" required autocomplete="username" data-i18n-placeholder="email.addressPlaceholder" placeholder="sales@qq.com"></label>
+                <label class="email-span-2"><span data-i18n="email.authCode">邮箱授权码</span><input id="emailAuthCode" type="password" autocomplete="off" data-i18n-placeholder="email.authCodePlaceholder" placeholder="新增或轮换时填写"><small data-i18n="email.authCodeHelp">请使用邮箱生成的客户端授权码，不是网页登录密码。</small></label>
+                <label><span data-i18n="email.folder">收件文件夹</span><input id="emailFolder" value="INBOX" readonly></label>
+                <label><span data-i18n="email.pollSeconds">轮询间隔（秒）</span><input id="emailPollSeconds" type="number" min="30" max="3600" value="60" required></label>
+                <label class="email-span-2"><span data-i18n="email.senderName">发件人名称</span><input id="emailSenderName" value="NanoClaw Sales" maxlength="80"></label>
+                <label class="email-span-2"><span data-i18n="email.allowedSenders">允许的发件人</span><textarea id="emailAllowedSenders" rows="3" data-i18n-placeholder="email.allowlistPlaceholder" placeholder="每行一个邮箱地址"></textarea></label>
+                <label class="email-span-2"><span data-i18n="email.allowedRecipients">允许的收件人</span><textarea id="emailAllowedRecipients" rows="3" data-i18n-placeholder="email.allowlistPlaceholder" placeholder="每行一个邮箱地址"></textarea><small data-i18n="email.recipientRule">启用发件时至少需要一个明确收件人。</small></label>
+              </div>
+              <div class="email-switches">
+                <label><input id="emailInboundEnabled" type="checkbox" checked><span><strong data-i18n="email.inboundEnabled">启用只读收件</strong><small data-i18n="email.inboundHint">使用 BODY.PEEK[]，不标记已读。</small></span></label>
+                <label><input id="emailOutboundEnabled" type="checkbox"><span><strong data-i18n="email.outboundEnabled">启用受控发件</strong><small data-i18n="email.outboundHint">M4 完成前不会发送邮件。</small></span></label>
+              </div>
+              <div id="emailServerSummary" class="email-server-summary" aria-live="polite"></div>
+              <div class="email-form-actions"><button id="emailToggleAccount" type="button" class="secondary-button" hidden data-i18n="email.enable">启用账户</button><button id="emailTestConnection" type="button" class="secondary-button" data-i18n="email.testConnection">测试连接</button><button id="emailSaveAccount" type="submit" class="email-primary-button" data-i18n="email.save">保存配置</button></div>
+            </form>
+          </section>
+          <section class="email-tab-panel email-review-panel" data-email-panel="inbound" role="tabpanel" hidden>
+            <div class="email-review-toolbar">
+              <label><span data-i18n="email.reviewStatus">邮件状态</span><select id="emailReviewStatus"><option value="all" data-i18n="email.allInbound">全部来信</option><option value="received" data-i18n="email.received">普通邮件</option><option value="needs_review" data-i18n="email.needsReview">待审核 RFQ</option><option value="confirmed" data-i18n="email.confirmed">已确认 RFQ</option><option value="ignored_non_trade" data-i18n="email.protectedMail">受保护邮件</option><option value="failed" data-i18n="email.parseFailed">解析失败</option></select></label>
+              <button id="emailReviewRefresh" type="button" class="secondary-button" data-i18n="email.refresh">刷新</button>
+            </div>
+            <div class="email-review-layout">
+              <aside id="emailInboundList" class="email-review-list" aria-live="polite"><div class="email-empty" data-i18n="email.unlockHint">输入管理令牌后读取账户。</div></aside>
+              <article id="emailInboundDetail" class="email-review-detail" aria-live="polite">
+                <div id="emailInboundContent" class="email-data-empty"><strong>邮件记录</strong><span>选择一封邮件查看正文和附件；RFQ 字段由 Agent 自动审核。</span></div>
+              </article>
+            </div>
+          </section>
+          <section class="email-tab-panel email-delivery-panel" data-email-panel="sendable" role="tabpanel" hidden><div class="email-review-toolbar"><strong data-i18n="email.quoteApprovalQueue">邮件报价、审批与待投递队列</strong><button id="emailSendableRefresh" type="button" class="secondary-button" data-i18n="email.refresh">刷新</button></div><div id="emailSendableContent" class="email-delivery-list" aria-live="polite"></div></section>
+          <section class="email-tab-panel email-delivery-panel" data-email-panel="deliveries" role="tabpanel" hidden><div class="email-review-toolbar"><span data-i18n="email.acceptedRule">SMTP accepted 不代表最终送达或已读。</span><button id="emailDeliveriesRefresh" type="button" class="secondary-button" data-i18n="email.refresh">刷新</button></div><div id="emailDeliveriesContent" class="email-delivery-list" aria-live="polite"></div></section>
+        </div>
+      </section>
+    </main>
+  </div>
+  <div id="toast" class="toast" role="status"></div>
+  <dialog id="emailQueueDialog" class="email-admin-dialog email-queue-dialog">
+    <form id="emailQueueForm" method="dialog" autocomplete="off">
+      <h3 data-i18n="email.queueTitle">确认加入真实邮件投递队列</h3>
+      <p id="emailQueueQuote"></p>
+      <label><span data-i18n="email.queueAccount">发件账户</span><select id="emailQueueAccount" required></select></label>
+      <label><span data-i18n="email.queueRecipient">收件人白名单</span><select id="emailQueueRecipient" required></select></label>
+      <label class="email-queue-consent"><input id="emailQueueConsent" type="checkbox" required><span data-i18n="email.queueConsent">我已核对报价版本、发件账户和完整收件人；启用真实 SMTP 时入队后可能立即发送。</span></label>
+      <menu><button id="emailQueueCancel" type="button" class="secondary-button" data-i18n="email.cancel">取消</button><button id="emailQueueSubmit" type="submit" class="email-primary-button" data-i18n="email.queueSubmit">明确确认并入队</button></menu>
+    </form>
+  </dialog>
+  <div id="mobileBackdrop" class="mobile-backdrop"></div>
+  <script src="/static/js/markdown.js" defer></script>
+  <script src="/static/app.js?v=20260727-ocr-review-1" defer></script>
+  <script src="/static/trade-workbench.js?v=20260728-1" defer></script>
+</body>
+</html>

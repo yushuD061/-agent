@@ -1,0 +1,34 @@
+[project]
+name = "nanoclaw"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = "==3.11.9"
+dependencies = [
+    "argon2-cffi==25.1.0",
+    "fastapi>=0.110.0",
+    "httpx>=0.27.0",
+    "jsonschema==4.25.1",
+    "lark-oapi==1.6.4",
+    "mcp==1.27.0",
+    "openai==1.93.0",
+    "numpy==2.4.1",
+    "paddleocr==3.3.3",
+    "paddlepaddle==3.2.2",
+    "pillow==12.3.0",
+    "pdfplumber==0.11.10",
+    "pgvector==0.5.0",
+    "psycopg[binary]==3.3.4",
+    "pymilvus==2.5.18",
+    "pymysql==1.1.2",
+    "pypdf==6.14.2",
+    "pytest>=9.1.1",
+    "pyyaml==6.0.2",
+    "qq-botpy==1.2.1",
+    "uvicorn>=0.29.0",
+    "websockets>=12.0",
+    "sqlite-vec==0.1.9",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["test"]

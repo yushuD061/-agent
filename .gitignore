@@ -1,0 +1,66 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# PaddleX runtime cache. Keep only the three OCR models required for offline
+# delivery; ignore server models, download locks, temporary files and caches.
+.paddlex/*
+!.paddlex/official_models/
+.paddlex/official_models/*
+!.paddlex/official_models/PP-OCRv5_mobile_det/
+!.paddlex/official_models/PP-OCRv5_mobile_det/**
+!.paddlex/official_models/PP-OCRv5_mobile_rec/
+!.paddlex/official_models/PP-OCRv5_mobile_rec/**
+!.paddlex/official_models/PP-LCNet_x1_0_textline_ori/
+!.paddlex/official_models/PP-LCNet_x1_0_textline_ori/**
+
+# Local credentials and runtime data
+.env
+.env.*
+!.env.example
+!deploy/docker/.env.example
+deploy/docker/.env
+data/*.dpapi.json
+botpy.log*
+workspace/sessions/*.jsonl
+workspace/memory/HISTORY.md
+workspace/knowledge_base/
+workspace/customer_auth/
+workspace/customer_data/
+.tmp/docker-m5/
+.tmp/docker-m6/
+# Local caches
+.pytest_cache/
+.uv-cache/
+.tmp/
+
+# Runtime data
+data/
+workspace/
+outputs/
+projects/
+agent/business/data/
+
+# Runtime databases and logs
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+*.log
+*.pid
+
+# Test and coverage artifacts
+.coverage
+htmlcov/
+
+# Not published to GitHub
+test/
+doc/

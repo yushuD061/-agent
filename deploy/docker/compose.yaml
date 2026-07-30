@@ -1,0 +1,188 @@
+name: nanoclaw-data-services
+
+services:
+  mysql:
+    image: mysql:8.4@sha256:8dbcf531a03aade657e181b9cf2f1d1803ce621a1d55610cb44cb531ab7d7db6
+    profiles: ["business", "all"]
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DOCKER_MYSQL_DATABASE:-nanoclaw_docker}
+      MYSQL_USER: ${DOCKER_MYSQL_USER:-nanoclaw_docker}
+      MYSQL_PASSWORD: ${DOCKER_MYSQL_PASSWORD:?Set DOCKER_MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DOCKER_MYSQL_ROOT_PASSWORD:?Set DOCKER_MYSQL_ROOT_PASSWORD}
+      TZ: UTC
+    ports:
+      - "127.0.0.1:${DOCKER_MYSQL_PORT:-3307}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u$$MYSQL_USER -p$$MYSQL_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+    networks: [data_services]
+
+  postgres:
+    image: pgvector/pgvector:pg16@sha256:1d533553fefe4f12e5d80c7b80622ba0c382abb5758856f52983d8789179f0fb
+    profiles: ["vector-local", "all"]
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DOCKER_POSTGRES_DATABASE:-nanoclaw_vector_docker}
+      POSTGRES_USER: ${DOCKER_POSTGRES_USER:-nanoclaw_vector_docker}
+      POSTGRES_PASSWORD: ${DOCKER_POSTGRES_PASSWORD:?Set DOCKER_POSTGRES_PASSWORD}
+      TZ: UTC
+    ports:
+      - "127.0.0.1:${DOCKER_POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+    networks: [data_services]
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.17.3
+    profiles: ["keyword-elasticsearch", "all"]
+    restart: unless-stopped
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "true"
+      xpack.security.http.ssl.enabled: "false"
+      ELASTIC_PASSWORD: ${DOCKER_ELASTIC_PASSWORD:?Set DOCKER_ELASTIC_PASSWORD}
+      ES_JAVA_OPTS: -Xms512m -Xmx512m
+    ports:
+      - "127.0.0.1:${DOCKER_ELASTIC_PORT:-9201}:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS -u elastic:$$ELASTIC_PASSWORD http://127.0.0.1:9200/_cluster/health?wait_for_status=yellow || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+    networks: [data_services]
+
+  etcd:
+    image: quay.io/coreos/etcd:v3.5.18@sha256:d0a641d5fbcc89678c931a61b7de7b8a1cf097149f135c9c73bc81d076a1494b
+    profiles: ["vector-milvus", "all", "migration"]
+    restart: unless-stopped
+    environment:
+      ETCD_AUTO_COMPACTION_MODE: revision
+      ETCD_AUTO_COMPACTION_RETENTION: "1000"
+      ETCD_QUOTA_BACKEND_BYTES: "4294967296"
+      ETCD_SNAPSHOT_COUNT: "50000"
+    command:
+      - etcd
+      - --advertise-client-urls=http://127.0.0.1:2379
+      - --listen-client-urls=http://0.0.0.0:2379
+      - --data-dir=/etcd
+    volumes:
+      - etcd_data:/etcd
+    healthcheck:
+      test: ["CMD", "etcdctl", "endpoint", "health"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    networks: [data_services]
+
+  minio:
+    image: minio/minio:RELEASE.2024-12-18T13-15-44Z@sha256:1dce27c494a16bae114774f1cec295493f3613142713130c2d22dd5696be6ad3
+    profiles: ["vector-milvus", "all", "migration"]
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: ${DOCKER_MINIO_ROOT_USER:-nanoclaw_minio}
+      MINIO_ROOT_PASSWORD: ${DOCKER_MINIO_ROOT_PASSWORD:?Set DOCKER_MINIO_ROOT_PASSWORD}
+    command: minio server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1:9000/minio/health/live || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+    networks: [data_services]
+
+  milvus:
+    image: milvusdb/milvus:v2.5.4@sha256:081e5471cb53756bd86bf2e2bfbedadec9e87cb181583c6f19410b23a711be00
+    profiles: ["vector-milvus", "all", "migration"]
+    restart: unless-stopped
+    command: ["milvus", "run", "standalone"]
+    environment:
+      ETCD_ENDPOINTS: etcd:2379
+      MINIO_ADDRESS: minio:9000
+      MINIO_ACCESS_KEY_ID: ${DOCKER_MINIO_ROOT_USER:-nanoclaw_minio}
+      MINIO_SECRET_ACCESS_KEY: ${DOCKER_MINIO_ROOT_PASSWORD:?Set DOCKER_MINIO_ROOT_PASSWORD}
+      COMMON_SECURITY_AUTHORIZATIONENABLED: "true"
+    depends_on:
+      etcd:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:${DOCKER_MILVUS_PORT:-19530}:19530"
+    volumes:
+      - milvus_data:/var/lib/milvus
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1:9091/healthz || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+    networks: [data_services]
+
+  milvus-backup:
+    image: milvusdb/milvus-backup:v0.5.8@sha256:bd15e25f333f48ba04b963135a011e693023852bac85f4613df07a0d55ea166b
+    profiles: ["migration"]
+    restart: "no"
+    environment:
+      M5_MILVUS_ROOT_PASSWORD: ${DOCKER_MILVUS_ROOT_PASSWORD:?Set DOCKER_MILVUS_ROOT_PASSWORD}
+      M5_MINIO_ROOT_USER: ${DOCKER_MINIO_ROOT_USER:-nanoclaw_minio}
+      M5_MINIO_ROOT_PASSWORD: ${DOCKER_MINIO_ROOT_PASSWORD:?Set DOCKER_MINIO_ROOT_PASSWORD}
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        umask 077
+        printf '%s\n' \
+          'milvus:' \
+          '  address: milvus' \
+          '  port: 19530' \
+          '  user: root' \
+          "  password: $$M5_MILVUS_ROOT_PASSWORD" \
+          '  tlsMode: 0' \
+          'minio:' \
+          '  storageType: minio' \
+          '  address: minio' \
+          '  port: 9000' \
+          "  accessKeyID: $$M5_MINIO_ROOT_USER" \
+          "  secretAccessKey: $$M5_MINIO_ROOT_PASSWORD" \
+          '  useSSL: false' \
+          '  useIAM: false' \
+          '  bucketName: a-bucket' \
+          '  rootPath: files' \
+          '  backupRootPath: backup' > /tmp/backup.yaml
+        exec /app/milvus-backup --config /tmp/backup.yaml server --port 8080
+    depends_on:
+      milvus:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:${DOCKER_MILVUS_BACKUP_PORT:-18080}:8080"
+    networks: [data_services]
+
+networks:
+  data_services:
+    driver: bridge
+
+volumes:
+  mysql_data:
+  postgres_data:
+  elasticsearch_data:
+  etcd_data:
+  minio_data:
+  milvus_data:

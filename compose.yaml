@@ -1,0 +1,50 @@
+name: nanoclaw
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        UV_VERSION: ${UV_VERSION:-0.11.28}
+    restart: unless-stopped
+    init: true
+    env_file:
+      - .env
+    environment:
+      # Uvicorn must listen on the container interface. Published ports remain
+      # loopback-only on the host unless the operator explicitly changes it.
+      NANOCLAW_WEB_HOST: 0.0.0.0
+      NANOCLAW_WEB_PORT: "8765"
+      NANOCLAW_CUSTOMER_PORTAL_HOST: 0.0.0.0
+      NANOCLAW_CUSTOMER_PORTAL_PORT: "8766"
+      NANOCLAW_WORKSPACE_WEB_HOST: 0.0.0.0
+      NANOCLAW_WORKSPACE_WEB_PORT: "8767"
+      PADDLE_PDX_CACHE_HOME: /app/.paddlex
+      PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK: "True"
+    ports:
+      - "${NANOCLAW_BIND_ADDRESS:-127.0.0.1}:${NANOCLAW_WEB_PUBLIC_PORT:-8765}:8765"
+      - "${NANOCLAW_BIND_ADDRESS:-127.0.0.1}:${NANOCLAW_CUSTOMER_PORTAL_PUBLIC_PORT:-8766}:8766"
+    volumes:
+      - nanoclaw_workspace:/app/workspace
+      - nanoclaw_data:/app/data
+    healthcheck:
+      test:
+        - CMD
+        - /app/.venv/bin/python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8765/healthz', timeout=5).read()"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+    stop_grace_period: 45s
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    shm_size: 1gb
+
+volumes:
+  nanoclaw_workspace:
+  nanoclaw_data:

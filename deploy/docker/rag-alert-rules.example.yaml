@@ -1,0 +1,17 @@
+groups:
+  - name: nanoclaw-vector-runtime
+    rules:
+      - alert: NanoClawVectorBackendNotReady
+        expr: nanoclaw_vector_backend_ready == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: Configured NanoClaw vector backend is not ready
+      - alert: NanoClawVectorOperationFailures
+        expr: increase(nanoclaw_vector_operation_failures_total[5m]) > 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: NanoClaw vector operations are failing

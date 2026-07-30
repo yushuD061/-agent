@@ -1,0 +1,40 @@
+{
+  "base_url": "https://api.siliconflow.cn/v1",
+  "models": {
+    "main": "zai-org/GLM-5.2",
+    "subagent": "deepseek-ai/DeepSeek-V4-Pro",
+    "cheap": "deepseek-ai/DeepSeek-V4-Flash"
+  },
+  "workspace": ".",
+  "max_iterations": 32,
+  "identity_file": "identity.md",
+  "web": {
+    "enabled": true,
+    "host": "127.0.0.1",
+    "port": 8765
+  },
+  "customer_portal": {
+    "enabled": true,
+    "host": "127.0.0.1",
+    "port": 8766,
+    "public_url": "",
+    "identity_file": "customer_identity.md",
+    "session_dir": "workspace/customer_sessions",
+    "memory_enabled": true,
+    "memory_file": "workspace/customer_memory/PUBLIC_MEMORY.md"
+  },
+  "mcp_servers": {
+    "foreign_trade_inquiry": {
+      "command": "{python}",
+      "args": ["-m", "mcp_servers.foreign_trade_inquiry_server"],
+      "description": "Foreign trade inquiry and quotation business server",
+      "enabled": true
+    },
+    "trade_rag": {
+      "command": "{python}",
+      "args": ["-m", "trade_rag.server"],
+      "description": "Enterprise knowledge-base RAG MCP server",
+      "enabled": true
+    }
+  }
+}

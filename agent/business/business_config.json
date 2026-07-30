@@ -1,0 +1,29 @@
+{
+  "_version": 1,
+  "database": {
+    "switch_description": "sqlite=local development; mysql=Docker/production trade_ops",
+    "backend": "sqlite",
+    "host": "127.0.0.1",
+    "port": 3306,
+    "name": "trade_ops",
+    "user": "",
+    "password": ""
+  },
+  "database_path": "data/business.db",
+  "llm": {
+    "base_url": "https://api.siliconflow.cn/v1",
+    "model": "deepseek-ai/DeepSeek-V4-Flash"
+  },
+  "exchange_rates": {
+    "USD": 1.0,
+    "CNY": 7.25,
+    "EUR": 0.92,
+    "GBP": 0.79,
+    "JPY": 149.5,
+    "AUD": 1.53,
+    "CAD": 1.36
+  },
+  "default_markup_percent": 15.0,
+  "default_validity_days": 15,
+  "max_rfq_text_length": 10000
+}
